@@ -18,18 +18,29 @@ class Example(Frame):
         for i in range(DIM[1]):
             self.rowconfigure(i, pad=3)
 
+        # Adds the labels to the grid
         for i in range(DIM[1]):
             for j in range(DIM[0]):
                 self.matrix[i][j] = 0
-                l = Label(self, text=self.matrix[i][j], bg="white", fg="black")
+
+                l = MyLabel(self, text="emt", position=[i,j])
                 l.grid(row=i, column=j)
 
-                # Define Behaviour
-                self.LabelOnClick(l, i, j)
         self.pack()
-
-
-    def LabelOnClick(self, l, i, j):
-        l.bind("<Button-1>", lambda e:print(i, j))
    
 
+class MyLabel(Label):
+    def __init__(self, parent, text, position):
+        # Sets the position
+        self.x = position[0]
+        self.y = position[1]
+
+        # Calles the Label constructor
+        super().__init__(parent, text=text, bg="white", fg="black", width=7, height=3)
+
+        # Binds the behaviour
+        self.bind("<Button>", self.click)
+
+    # onClick behaviour
+    def click(self, event):
+        print(self.x, self.y)

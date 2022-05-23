@@ -6,9 +6,11 @@ from board import Example
 DIM = (7,6)
 # Creates a tkinter window and positions it on a screen
 root = tk.Tk()
-root.geometry("500x500+800+300")
+root.geometry("455x450+800+300")
 root.resizable(False, False)
 
-# Run the app
 app = Example(DIM)
+label = tk.Label(text="info")
+app.pack()
+label.pack()
 root.mainloop()
