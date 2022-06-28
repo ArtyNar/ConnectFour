@@ -10,7 +10,11 @@ root.geometry("455x450+800+300")
 root.resizable(False, False)
 
 app = Example(DIM)
-label = tk.Label(text="info")
+
+player = app.getPlayer()
+
+label = tk.Label(text=player)
+
 app.pack()
 label.pack()
 root.mainloop()
