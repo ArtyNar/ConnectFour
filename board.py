@@ -1,10 +1,10 @@
 from cProfile import label
 from multiprocessing import Event
 from tkinter import Frame, Label, Button
-from PIL import Image, ImageTk
 
 class Player:
         playerNum = 0
+        score = ["0","0"]
 
 class Board(Frame):
 
@@ -12,7 +12,7 @@ class Board(Frame):
         # The only way it worked. 
         # Had to create a player class to hold the value for a current player
         self.player = Player()
-        self.cells = []
+        self.label = Label()
 
         super().__init__()
         self.matrix = [[0 for x in range(DIM[0])] for y in range(DIM[1])] 
@@ -37,8 +37,10 @@ class Board(Frame):
                 l.grid(row=i, column=j)
 
                 self.matrix[i][j] = l
-
         self.pack()
+
+        self.label.config(text= "Current player: " + str(self.player.playerNum))
+        self.label.pack()
    
     def getPlayer(self):
         return self.player.playerNum
@@ -67,7 +69,7 @@ class Board(Frame):
             print("x:", self.x, "y:", self.y)
 
             # This is how I can access the parent's variables. Awesome!!!
-            print("Player: ", self.parent.player.playerNum)
+            # print("Player: ", self.parent.player.playerNum)
 
             # Check if the cell is already locked
             if self.lock == 0:
@@ -80,7 +82,14 @@ class Board(Frame):
                     else:
                         self.parent.player.playerNum = 0
                         self.config(background="Green")
+
+                    # Lock the... lock ;)
                     self.lock = 1
+
+                    # Update the bottom layer
+                    self.parent.label.config(text = "Current player: " + str(self.parent.player.playerNum))
+                    
+                    self.checkWin()
                 else:
                     print("Incorrect selection")
             else:
@@ -102,3 +111,17 @@ class Board(Frame):
                 filled = True
 
             return filled
+
+        def getScore(self, playerNum):
+            return self.parent.player.score[playerNum]
+
+        def checkWin(self):
+            score1 = self.getScore(0)
+            score2 = self.getScore(1)
+            print("Score for Player 0: ", score1)
+            print("Score for Player 1: ", score2)
+
+            if (score1 == 4):
+                print("Player 0 won!")
+            if (score2 == 4):
+                print("Player 1 won!")

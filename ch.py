@@ -13,8 +13,8 @@ app = Board(DIM)
 
 player = app.getPlayer()
 
-label = tk.Label(text=player)
+#label = tk.Label(text=player)
 
 app.pack()
-label.pack()
+#label.pack()
 root.mainloop()
