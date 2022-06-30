@@ -1,5 +1,5 @@
 import tkinter as tk
-from board import Example
+from board import Board
 ##############
 # A mainfile #
 ##############
@@ -9,7 +9,7 @@ root = tk.Tk()
 root.geometry("455x450+800+300")
 root.resizable(False, False)
 
-app = Example(DIM)
+app = Board(DIM)
 
 player = app.getPlayer()
 
