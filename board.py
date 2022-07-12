@@ -2,15 +2,16 @@ from cProfile import label
 from email.mime import message
 from multiprocessing import Event
 from tkinter import Frame, Label, messagebox
-import sys
-import os
+from computerAI import computerTurn
+import scoreCalculations
+# import sys
+# import os
 
 class Player:
         playerNum = 0
         score = [0,0]
 
 class Board(Frame):
-
     def __init__(self, DIM):
         # The only way it worked. 
         # Had to create a player class to hold the value for a current player
@@ -53,6 +54,7 @@ class Board(Frame):
     def getPlayer(self):
         return self.player.playerNum
 
+    # Updates the bottom labels
     def updateLabels(self):
         self.currentPlayerLabel.config(text= "Current player: " + str(self.player.playerNum))
         self.currentScoreLabel.config(text="Score: 0 = " + str(self.player.score[0]) + "\nScore: 1 = " + str(self.player.score[1]))
@@ -109,12 +111,17 @@ class Board(Frame):
                     self.checkWin()
                     # Update the bottom labels
                     self.parent.updateLabels()
+
+                    # Now, it is computer's turn!!!
+                    if(self.parent.player.playerNum == 1):
+                        computerTurn(event, self)
                 else:
                     # Jumps to a correct selection within the column.
                     self.parent.matrix[self.y+1][self.x].on_mouse_down(event)
             else:
                 print("Locked")
 
+            
         def printCoordinates(self):
             # To print coordinates
             print("x:", self.x, "y:", self.y)
@@ -142,7 +149,7 @@ class Board(Frame):
 
         # Calculates the score for each player
         def getScore(self, playerNum):
-            self.setScore(playerNum)
+            scoreCalculations.setScore(self, playerNum)
             return self.parent.player.score[playerNum]
 
         # Prints players' scores, shows if any of the players won
@@ -151,104 +158,29 @@ class Board(Frame):
             #print("Score for Player ", self.parent.player.playerNum, ":" , score)
             if (score == 4):
                 messagebox.showinfo(title="Game over", message="Player " + str(1-self.parent.player.playerNum) + " won!")
-                
+
                 # Returns a player that won
                 return 1-self.parent.player.playerNum
+        
         ###
         #
         #   The next set of functions is used to 
         #   calculate the score after each turn of the game.
         #   We have to check score horizontally, vertically, and diagonally.
+        #   All of them are in the scoreCalculations.py library (?)
         #
         ###
         def setScore(self, playerNum):
-            horiz = self.checkRight(playerNum) + self.checkLeft(playerNum) - 1
-            vert = self.checkDown(playerNum) 
-            diag = self.checkDiagonal(playerNum)
-            self.parent.player.score[playerNum] = max(horiz, vert, diag)
-            
-            return self.parent.player.score[playerNum]
+            return scoreCalculations.setScore(self, playerNum)
 
         def checkRight(self, playerNum):
-            if(self.filledWith != playerNum):
-                return 0   
-            if (self.x == 6):
-                return 1
-            return 1 + self.parent.matrix[self.y][self.x+1].checkRight(playerNum) 
-        
+            return scoreCalculations.checkRight(self, playerNum)
+
         def checkLeft(self, playerNum):
-            if(self.filledWith != playerNum):
-                return 0
-            if (self.x == 0):
-                return 1
-            return 1 + self.parent.matrix[self.y][self.x-1].checkLeft(playerNum) 
+            return scoreCalculations.checkLeft(self, playerNum)
 
         def checkDown(self, playerNum):
-            if(self.filledWith != playerNum):
-                return 0
-            if (self.y == 5):
-                return 1
-            return 1 + self.parent.matrix[self.y+1][self.x].checkDown(playerNum) 
+            return scoreCalculations.checkDown(self, playerNum)
 
         def checkDiagonal(self, playerNum):
-            # Checking top left
-            x = self.x
-            y = self.y
-            scoreTopLeft = 1
-            while(True):
-                x -= 1
-                y -= 1
-                if(x < 0 or y < 0):
-                    break
-                if(self.parent.matrix[y][x].filledWith != playerNum):
-                    break
-                else:
-                    scoreTopLeft += 1
-
-            # Checking bottom right
-            x = self.x
-            y = self.y
-            scoreBottomRight = 1
-            while(True):
-                x += 1
-                y += 1
-                if(x > 6 or y > 5):
-                    break
-                if(self.parent.matrix[y][x].filledWith != playerNum):
-                    break
-                else:
-                    scoreBottomRight += 1
-
-            diagonal1 = scoreTopLeft + scoreBottomRight - 1
-            
-             # Checking top right
-            x = self.x
-            y = self.y
-            scoreTopRight = 1
-            while(True):
-                x += 1
-                y -= 1
-                if(x > 6 or y < 0):
-                    break
-                if(self.parent.matrix[y][x].filledWith != playerNum):
-                    break
-                else:
-                    scoreTopRight += 1
-
-            # Checking bottom left
-            x = self.x
-            y = self.y
-            scoreBottomLeft = 1
-            while(True):
-                x -= 1
-                y += 1
-                if(x < 0 or y > 5):
-                    break
-                if(self.parent.matrix[y][x].filledWith != playerNum):
-                    break
-                else:
-                    scoreBottomLeft += 1
-
-            diagonal2 = scoreTopRight + scoreBottomLeft - 1
-
-            return max(diagonal1, diagonal2)
+            return scoreCalculations.checkDiagonal(self, playerNum)

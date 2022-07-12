@@ -10,6 +10,7 @@ root.geometry("455x500+800+300")
 root.resizable(False, False)
 
 app = Board(DIM)
-
 app.pack()
+
 root.mainloop()
+
