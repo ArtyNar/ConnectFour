@@ -2,7 +2,7 @@ from cProfile import label
 from email.mime import message
 from multiprocessing import Event
 from tkinter import Frame, Label, messagebox
-from computerAI import computerTurn
+from computerAI import betterAgent, randomAgent
 import scoreCalculations
 # import sys
 # import os
@@ -21,6 +21,7 @@ class Board(Frame):
 
         super().__init__()
         self.matrix = [[0 for x in range(DIM[0])] for y in range(DIM[1])] 
+        self.decodedMatrix = [[0 for x in range(DIM[0])] for y in range(DIM[1])] 
         self.initUI(DIM)
 
     def initUI(self, DIM):
@@ -63,7 +64,9 @@ class Board(Frame):
     # An inner class for each label on the board
     # Inner, since lables won't exist without the parent
     class GameLabel(Label):
+        # A lock, that checks if the cell is already taken
         lock = 0
+        # Just a default filling
         filledWith = -1
 
         def __init__(self, parent, text, position):
@@ -76,15 +79,16 @@ class Board(Frame):
             # Calles the Label constructor
             super().__init__(parent, text=text, bg="white", fg="black", width=7, height=3)
 
-            # Binds the behaviour
+            # Binds the behaviour to a mousedown
             self.bind("<Button>", self.on_mouse_down)
             
         # Definces onclick behaviour
         def on_mouse_down(self, event):
             # To print which player the label is filled with
-            #print(self.filledWith)
+            # print(self.filledWith)
 
-            #self.printCoordinates()
+            # I can see the coordinates of every cell I click 
+            # self.printCoordinates()
 
             # This is how I can access the parent's variables. Awesome!!!
             # print("Player: ", self.parent.player.playerNum)
@@ -98,23 +102,29 @@ class Board(Frame):
                         self.parent.player.playerNum = 1
                         self.config(background="Blue")
 
+                        # Updates the matrix used by ai
+                        self.parent.decodedMatrix[self.y][self.x] = 1
+
                         self.filledWith = 0
                     else:
                         self.parent.player.playerNum = 0
                         self.config(background="Green")
 
+                        # Updates the matrix used by ai
+                        self.parent.decodedMatrix[self.y][self.x] = 2
+
                         self.filledWith = 1
 
                     # Lock the... lock ;)
                     self.lock = 1
-
+                    
                     self.checkWin()
                     # Update the bottom labels
                     self.parent.updateLabels()
 
                     # Now, it is computer's turn!!!
                     if(self.parent.player.playerNum == 1):
-                        computerTurn(event, self)
+                        betterAgent(event, self)
                 else:
                     # Jumps to a correct selection within the column.
                     self.parent.matrix[self.y+1][self.x].on_mouse_down(event)
