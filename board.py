@@ -2,7 +2,7 @@ from cProfile import label
 from email.mime import message
 from multiprocessing import Event
 from tkinter import Frame, Label, messagebox
-from computerAI import betterAgent, randomAgent
+from computerAI import betterAgent, randomAgent, smartAgent
 import scoreCalculations
 # import sys
 # import os
@@ -38,7 +38,7 @@ class Board(Frame):
         for i in range(DIM[1]):
             for j in range(DIM[0]):
 
-                l = self.GameLabel(self, text="emt", position=[i,j])
+                l = self.GameLabel(self, text=" ", position=[i,j])
                 
                 l.grid(row=i, column=j)
 
@@ -123,7 +123,7 @@ class Board(Frame):
 
                     # Now, it is computer's turn!!!
                     if(self.parent.player.playerNum == 1):
-                        betterAgent(event, self)
+                        oneStepAgent(event, self)
                 else:
                     # Jumps to a correct selection within the column.
                     self.parent.matrix[self.y+1][self.x].on_mouse_down(event)
