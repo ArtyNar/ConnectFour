@@ -131,6 +131,9 @@ class Board(Frame):
             else:
                 print("Locked")
 
+            # Allows me to check the matrix after each turn
+            #print(self.parent.decodedMatrix)
+
             
         def printCoordinates(self):
             # To print coordinates
