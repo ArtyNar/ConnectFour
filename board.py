@@ -59,8 +59,7 @@ class Board(Frame):
     def updateLabels(self):
         self.currentPlayerLabel.config(text= "Current player: " + str(self.player.playerNum))
         self.currentScoreLabel.config(text="Score: 0 = " + str(self.player.score[0]) + "\nScore: 1 = " + str(self.player.score[1]))
-    
-    
+      
     # An inner class for each label on the board
     # Inner, since lables won't exist without the parent
     class GameLabel(Label):
@@ -132,13 +131,14 @@ class Board(Frame):
                 print("Locked")
 
             # Allows me to check the matrix after each turn
-            #print(self.parent.decodedMatrix)
+            # print(self.parent.decodedMatrix)
 
-            
+        # Prints coordinates of a pressed label
         def printCoordinates(self):
             # To print coordinates
             print("x:", self.x, "y:", self.y)
 
+        # Returns if the label is filled or not
         def isFilled(self):
             if self.lock == 1:
                 return True
@@ -160,7 +160,7 @@ class Board(Frame):
         def getLablePlayer(self):
             return self.filledWith
 
-        # Calculates the score for each player
+        # Calculates the score for each player based on the placed chip
         def getScore(self, playerNum):
             scoreCalculations.setScore(self, playerNum)
             return self.parent.player.score[playerNum]
