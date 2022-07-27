@@ -3,11 +3,11 @@ import copy
 import numpy as np
 
 # Mindless random agent, plots the chips randomly
-def randomAgent(event, self):
-    valid_moves = [col for col in range(7) if self.parent.matrix[0][col].isFilled() == False]
+def randomAgent(event, parent):
+    valid_moves = [col for col in range(7) if parent.matrix[0][col].isFilled() == False]
     choiceCol = random.choice(valid_moves)
 
-    self.parent.matrix[0][choiceCol].on_mouse_down(event)
+    parent.matrix[0][choiceCol].on_mouse_down(event)
 
 ###
 # A better agent, looking one step ahead

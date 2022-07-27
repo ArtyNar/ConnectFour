@@ -1,8 +1,8 @@
 from cProfile import label
 from email.mime import message
 from multiprocessing import Event
-from tkinter import Frame, Label, messagebox
-from computerAI import betterAgent, randomAgent, smartAgent
+from tkinter import Frame, Label, messagebox, Button
+from computerAI import oneStepAgent, randomAgent, nStepAgent
 import scoreCalculations
 # import sys
 # import os
@@ -18,6 +18,7 @@ class Board(Frame):
         self.player = Player()
         self.currentPlayerLabel = Label()
         self.currentScoreLabel = Label()
+        self.simulateButton = Button()
 
         super().__init__()
         self.matrix = [[0 for x in range(DIM[0])] for y in range(DIM[1])] 
@@ -48,8 +49,14 @@ class Board(Frame):
         # Configuring a bottom labels
         self.updateLabels()
 
+        # Sets up a simulate button
+        self.simulateButton.config(text="Simulate")
+        self.simulateButton.bind("<Button>", self.simulate)
+
+        # Packing all the footer stuff
         self.currentPlayerLabel.pack()
         self.currentScoreLabel.pack()
+        self.simulateButton.pack()
    
     # Returns a current player number (0 or 1)
     def getPlayer(self):
@@ -60,6 +67,11 @@ class Board(Frame):
         self.currentPlayerLabel.config(text= "Current player: " + str(self.player.playerNum))
         self.currentScoreLabel.config(text="Score: 0 = " + str(self.player.score[0]) + "\nScore: 1 = " + str(self.player.score[1]))
       
+    # Creates a simulation of a game, with agents playing against one another 
+    def simulate(self, event):
+        print("simulate")
+        randomAgent(event, self)
+    
     # An inner class for each label on the board
     # Inner, since lables won't exist without the parent
     class GameLabel(Label):
