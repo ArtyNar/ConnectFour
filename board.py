@@ -4,6 +4,9 @@ from multiprocessing import Event
 from tkinter import Frame, Label, messagebox, Button
 from computerAI import oneStepAgent, randomAgent, nStepAgent
 import scoreCalculations
+
+import time
+
 # import sys
 # import os
 
@@ -69,8 +72,8 @@ class Board(Frame):
       
     # Creates a simulation of a game, with agents playing against one another 
     def simulate(self, event):
-        print("simulate")
-        randomAgent(event, self)
+        oneStepAgent(event, self)
+
     
     # An inner class for each label on the board
     # Inner, since lables won't exist without the parent
@@ -134,8 +137,10 @@ class Board(Frame):
                     self.parent.updateLabels()
 
                     # Now, it is computer's turn!!!
+                    # Here, you can choose which algorithm the AI will use
                     if(self.parent.player.playerNum == 1):
-                        oneStepAgent(event, self)
+                        oneStepAgent(event, self.parent)
+
                 else:
                     # Jumps to a correct selection within the column.
                     self.parent.matrix[self.y+1][self.x].on_mouse_down(event)

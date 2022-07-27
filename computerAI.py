@@ -15,15 +15,15 @@ def randomAgent(event, parent):
 # - use the heuristic to assign a score to each possible valid move, and
 # - select the move that gets the highest score. (If multiple moves get the high score, we select one at random.)
 ###
-def oneStepAgent(event, self):
+def oneStepAgent(event, parent):
     # "Simply" chooses a valid move
-    valid_moves = [col for col in range(7) if self.parent.matrix[0][col].isFilled() == False]
-
+    valid_moves = [col for col in range(7) if parent.matrix[0][col].isFilled() == False]
+    
     # Iterates over each potential chip drop, gets the score and stores all of them in an array
     results = []
     for col in valid_moves:
         # Makes a copy of a matrix to simulate
-        matrixCopy = np.asarray(copy.deepcopy(self.parent.decodedMatrix))
+        matrixCopy = np.asarray(copy.deepcopy(parent.decodedMatrix))
         # Drops a piece into a copy
         matrixCopy = simulateDrop(matrixCopy, col)
 
@@ -34,12 +34,12 @@ def oneStepAgent(event, self):
     results = np.array(results)
     # Returns all the indeces with max scores
     filteredInxs = np.argwhere(results == np.amax(results))
-    print(filteredInxs)
+
     # Randomly selects from highest scored options
     final_choice = random.choice(filteredInxs)
 
     # Finally, places the chip in a chosen spot!
-    self.parent.matrix[0][final_choice[0]].on_mouse_down(event)
+    parent.matrix[0][valid_moves[final_choice[0]]].on_mouse_down(event)
 
 ###
 # Even better - looks N steps ahead into a future!
