@@ -10,6 +10,8 @@ import time
 # import sys
 # import os
 
+# Global scores for first, second players, and ties
+
 class Player:
         playerNum = 0
         score = [0,0]
@@ -18,10 +20,17 @@ class Board(Frame):
     def __init__(self, DIM):
         # The only way it worked. 
         # Had to create a player class to hold the value for a current player
+        self.DIM = DIM
         self.player = Player()
         self.currentPlayerLabel = Label()
         self.currentScoreLabel = Label()
-        self.simulateButton = Button()
+        self.simulateGameButton = Button()
+        self.simulateDropButton = Button()
+
+        self.scores = [0,0,0]
+
+        self.isWon = False
+        self.isTie = False
 
         super().__init__()
         self.matrix = [[0 for x in range(DIM[0])] for y in range(DIM[1])] 
@@ -52,14 +61,18 @@ class Board(Frame):
         # Configuring a bottom labels
         self.updateLabels()
 
-        # Sets up a simulate button
-        self.simulateButton.config(text="Simulate")
-        self.simulateButton.bind("<Button>", self.simulate)
+        # Sets up simulate buttons
+        self.simulateGameButton.config(text="Simulate Game")
+        self.simulateGameButton.bind("<Button>", self.simulateGame)
+
+        self.simulateDropButton.config(text="Simulate Drop")
+        self.simulateDropButton.bind("<Button>", self.simulateDrop)
 
         # Packing all the footer stuff
         self.currentPlayerLabel.pack()
         self.currentScoreLabel.pack()
-        self.simulateButton.pack()
+        self.simulateDropButton.pack()
+        self.simulateGameButton.pack()
    
     # Returns a current player number (0 or 1)
     def getPlayer(self):
@@ -68,14 +81,33 @@ class Board(Frame):
     # Updates the bottom labels
     def updateLabels(self):
         self.currentPlayerLabel.config(text= "Current player: " + str(self.player.playerNum))
-        self.currentScoreLabel.config(text="Score: 0 = " + str(self.player.score[0]) + "\nScore: 1 = " + str(self.player.score[1]))
+        self.currentScoreLabel.config(text="Score: 0 = " + str(self.scores[0]) + "\nScore: 1 = " + str(self.scores[1]) + "\nTies = " + str(self.scores[2]))
       
     # Creates a simulation of a game, with agents playing against one another 
-    def simulate(self, event):
-        oneStepAgent(event, self)
-
+    def simulateGame(self, event):
+        while(self.isWon == False and self.isTie == False):
+            oneStepAgent(event, self)                                                   # !!!! CHANGE THE PLAYER 0 ANGENT HERE
+        
+        # Having to now roll back the game status
+        self.isWon = False
+        self.isTie = False
+        #self.reset()
     
-    # An inner class for each label on the board
+    # Simulates a single drop using a particular agent
+    def simulateDrop(self, event):
+        oneStepAgent(event, self)                                                       # !!!! CHANGE THE PLAYER 0 ANGENT HERE
+
+    # Resets the board to start the game over
+    def resetAll(self):
+        print("resetting")
+
+        self.decodedMatrix = [[0 for x in range(self.DIM[0])] for y in range(self.DIM[1])] 
+        self.player.playerNum = 0
+        self.updateLabels()
+        for rows in range(self.DIM[1]):
+            for cols in range(self.DIM[0]):
+                self.matrix[rows][cols].reset()
+
     # Inner, since lables won't exist without the parent
     class GameLabel(Label):
         # A lock, that checks if the cell is already taken
@@ -132,17 +164,16 @@ class Board(Frame):
                     # Lock the... lock ;)
                     self.lock = 1
                     
-                    self.checkWin()
                     # Update the bottom labels
                     self.parent.updateLabels()
 
-                    # Now, it is computer's turn!!!
-                    # Here, you can choose which algorithm the AI will use
-                    if(self.parent.player.playerNum == 1):
-                        oneStepAgent(event, self.parent)
-
+                    # Increments the global score if the game is won
+                    if(not self.checkWin()):
+                        # Now, it is computer's turn!!!
+                        # Here, you can choose which algorithm the AI will use
+                        if(self.parent.player.playerNum == 1):
+                            oneStepAgent(event, self.parent)                                    #!!!! CHANGE THE PLAYER 1 AGENT HERE
                 else:
-                    # Jumps to a correct selection within the column.
                     self.parent.matrix[self.y+1][self.x].on_mouse_down(event)
             else:
                 print("Locked")
@@ -161,6 +192,12 @@ class Board(Frame):
                 return True
             else:
                 return False
+
+        # Resets a lable to the initial state
+        def reset(self):
+            self.lock = 0
+            self.filledWith = -1
+            self.config(background="White")
 
         # This checks if a position of a new circle is viable
         def checkIfCorrect(self):
@@ -188,11 +225,17 @@ class Board(Frame):
             #print("Score for Player ", self.parent.player.playerNum, ":" , score)
             if (score == 4):
                 messagebox.showinfo(title="Game over", message="Player " + str(1-self.parent.player.playerNum) + " won!")
+                self.parent.isWon = True
+                
+                #Increments the global score for the winner
+                winnerPlayer = 1 - self.parent.player.playerNum
+                self.parent.scores[winnerPlayer] +=1
 
-                # Returns a player that won
-                return 1-self.parent.player.playerNum
-        
-        ###
+                self.parent.resetAll()
+                return True
+            else: 
+                return False
+
         #
         #   The next set of functions is used to 
         #   calculate the score after each turn of the game.

@@ -2,6 +2,7 @@ import random
 import copy
 import numpy as np
 
+
 # Mindless random agent, plots the chips randomly
 def randomAgent(event, parent):
     valid_moves = [col for col in range(7) if parent.matrix[0][col].isFilled() == False]
@@ -18,7 +19,14 @@ def randomAgent(event, parent):
 def oneStepAgent(event, parent):
     # "Simply" chooses a valid move
     valid_moves = [col for col in range(7) if parent.matrix[0][col].isFilled() == False]
-    
+
+    # Check if the game is over
+    if(len(valid_moves) == 0):
+        parent.isTie = True
+        parent.scores[2] += 1
+        parent.resetAll()
+        return
+
     # Iterates over each potential chip drop, gets the score and stores all of them in an array
     results = []
     for col in valid_moves:
