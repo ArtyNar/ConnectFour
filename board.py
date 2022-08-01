@@ -63,7 +63,7 @@ class Board(Frame):
 
         # Sets up simulate buttons
         self.simulateGameButton.config(text="Simulate Game")
-        self.simulateGameButton.bind("<Button>", self.simulateGame)
+        self.simulateGameButton.bind("<Button>", self.simulateManyGames)
 
         self.simulateDropButton.config(text="Simulate Drop")
         self.simulateDropButton.bind("<Button>", self.simulateDrop)
@@ -92,6 +92,11 @@ class Board(Frame):
         self.isWon = False
         self.isTie = False
         #self.reset()
+
+    # Now the fun part - I can simulate many games to be played consecutively
+    def simulateManyGames(self, event):
+        for i in range(20):
+            self.simulateGame(event)
     
     # Simulates a single drop using a particular agent
     def simulateDrop(self, event):
@@ -99,8 +104,6 @@ class Board(Frame):
 
     # Resets the board to start the game over
     def resetAll(self):
-        print("resetting")
-
         self.decodedMatrix = [[0 for x in range(self.DIM[0])] for y in range(self.DIM[1])] 
         self.player.playerNum = 0
         self.updateLabels()
@@ -224,7 +227,7 @@ class Board(Frame):
             score = self.getScore(1-self.parent.player.playerNum)
             #print("Score for Player ", self.parent.player.playerNum, ":" , score)
             if (score == 4):
-                messagebox.showinfo(title="Game over", message="Player " + str(1-self.parent.player.playerNum) + " won!")
+                #messagebox.showinfo(title="Game over", message="Player " + str(1-self.parent.player.playerNum) + " won!")
                 self.parent.isWon = True
                 
                 #Increments the global score for the winner

@@ -36,7 +36,7 @@ def oneStepAgent(event, parent):
         matrixCopy = simulateDrop(matrixCopy, col)
 
         # Here, I can change which heuristic function I get to use
-        score = oneStepGetScoreV2(matrixCopy)
+        score = oneStepGetScoreV2(matrixCopy)                                       # CHANGE FOR A DIFFERENT HEURISTIC FUNCTION
         results.append(score)
 
     results = np.array(results)
