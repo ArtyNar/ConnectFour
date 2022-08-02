@@ -2,8 +2,9 @@ from cProfile import label
 from email.mime import message
 from multiprocessing import Event
 from tkinter import Frame, Label, messagebox, Button
-from computerAI import oneStepAgent, randomAgent, nStepAgent
+from computerAI import oneStepAgent, randomAgent
 import scoreCalculations
+from nstepAgent import nstepAgent
 
 import time
 
@@ -86,8 +87,7 @@ class Board(Frame):
     # Creates a simulation of a game, with agents playing against one another 
     def simulateGame(self, event):
         while(self.isWon == False and self.isTie == False):
-            oneStepAgent(event, self)                                                   # !!!! CHANGE THE PLAYER 0 ANGENT HERE
-        
+            nstepAgent(event, self, self.player.playerNum)            # !!!! CHANGE THE ANGENT HERE
         # Having to now roll back the game status
         self.isWon = False
         self.isTie = False
@@ -95,12 +95,12 @@ class Board(Frame):
 
     # Now the fun part - I can simulate many games to be played consecutively
     def simulateManyGames(self, event):
-        for i in range(20):
+        for i in range(10):
             self.simulateGame(event)
     
     # Simulates a single drop using a particular agent
     def simulateDrop(self, event):
-        oneStepAgent(event, self)                                                       # !!!! CHANGE THE PLAYER 0 ANGENT HERE
+        nstepAgent(event, self, self.player.playerNum)                  # !!!! CHANGE THE AGENT HERE
 
     # Resets the board to start the game over
     def resetAll(self):
@@ -171,11 +171,13 @@ class Board(Frame):
                     self.parent.updateLabels()
 
                     # Increments the global score if the game is won
-                    if(not self.checkWin()):
-                        # Now, it is computer's turn!!!
-                        # Here, you can choose which algorithm the AI will use
-                        if(self.parent.player.playerNum == 1):
-                            oneStepAgent(event, self.parent)                                    #!!!! CHANGE THE PLAYER 1 AGENT HERE
+                    self.checkWin()
+
+                    # Here, I can make the computer's turn automatic if I want to
+                    # if(not self.checkWin()):
+                    #     if(self.parent.player.playerNum == 1):
+                    #         print()
+                    #         #oneStepAgent(event, self.parent)                                    #!!!! CHANGE THE PLAYER 1 AGENT HERE
                 else:
                     self.parent.matrix[self.y+1][self.x].on_mouse_down(event)
             else:
@@ -227,7 +229,7 @@ class Board(Frame):
             score = self.getScore(1-self.parent.player.playerNum)
             #print("Score for Player ", self.parent.player.playerNum, ":" , score)
             if (score == 4):
-                #messagebox.showinfo(title="Game over", message="Player " + str(1-self.parent.player.playerNum) + " won!")
+                messagebox.showinfo(title="Game over", message="Player " + str(1-self.parent.player.playerNum) + " won!")
                 self.parent.isWon = True
                 
                 #Increments the global score for the winner
@@ -239,6 +241,7 @@ class Board(Frame):
             else: 
                 return False
 
+        ###
         #
         #   The next set of functions is used to 
         #   calculate the score after each turn of the game.
