@@ -87,7 +87,7 @@ class Board(Frame):
     # Creates a simulation of a game, with agents playing against one another 
     def simulateGame(self, event):
         while(self.isWon == False and self.isTie == False):
-            nstepAgent(event, self, self.player.playerNum)            # !!!! CHANGE THE ANGENT HERE
+            oneStepAgent(event, self, self.player.playerNum)            # !!!! CHANGE THE ANGENT HERE
         # Having to now roll back the game status
         self.isWon = False
         self.isTie = False
@@ -100,7 +100,7 @@ class Board(Frame):
     
     # Simulates a single drop using a particular agent
     def simulateDrop(self, event):
-        nstepAgent(event, self, self.player.playerNum)                  # !!!! CHANGE THE AGENT HERE
+        oneStepAgent(event, self, self.player.playerNum)                  # !!!! CHANGE THE AGENT HERE
 
     # Resets the board to start the game over
     def resetAll(self):
@@ -173,11 +173,10 @@ class Board(Frame):
                     # Increments the global score if the game is won
                     self.checkWin()
 
-                    # Here, I can make the computer's turn automatic if I want to
+                    # # Here, I can make the computer's turn automatic if I want to
                     # if(not self.checkWin()):
                     #     if(self.parent.player.playerNum == 1):
-                    #         print()
-                    #         #oneStepAgent(event, self.parent)                                    #!!!! CHANGE THE PLAYER 1 AGENT HERE
+                    #         nstepAgent(event, self.parent, self.parent.player.playerNum)                                    #!!!! CHANGE THE PLAYER 1 AGENT HERE
                 else:
                     self.parent.matrix[self.y+1][self.x].on_mouse_down(event)
             else:
@@ -229,7 +228,7 @@ class Board(Frame):
             score = self.getScore(1-self.parent.player.playerNum)
             #print("Score for Player ", self.parent.player.playerNum, ":" , score)
             if (score == 4):
-                messagebox.showinfo(title="Game over", message="Player " + str(1-self.parent.player.playerNum) + " won!")
+                #messagebox.showinfo(title="Game over", message="Player " + str(1-self.parent.player.playerNum) + " won!")
                 self.parent.isWon = True
                 
                 #Increments the global score for the winner

@@ -33,7 +33,6 @@ def nstepAgent(event, parent, mark):
     # Use the heuristic to assign a score to each possible board in the next step
     scores = dict(zip(valid_moves, [score_move(matrixCopy, col, mark+1, config, N_STEPS) for col in valid_moves]))
 
-    print(scores)
     # Get a list of columns (moves) that maximize the heuristic
     max_cols = [key for key in scores.keys() if scores[key] == max(scores.values())]
     # Select at random from the maximizing columns
