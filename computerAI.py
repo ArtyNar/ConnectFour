@@ -16,7 +16,7 @@ def randomAgent(event, parent):
 # - use the heuristic to assign a score to each possible valid move, and
 # - select the move that gets the highest score. (If multiple moves get the high score, we select one at random.)
 ###
-def oneStepAgent(event, parent):
+def oneStepAgent(event, parent, mark):
     # "Simply" chooses a valid move
     valid_moves = [col for col in range(7) if parent.matrix[0][col].isFilled() == False]
 
@@ -33,10 +33,10 @@ def oneStepAgent(event, parent):
         # Makes a copy of a matrix to simulate
         matrixCopy = np.asarray(copy.deepcopy(parent.decodedMatrix))
         # Drops a piece into a copy
-        matrixCopy = simulateDrop(matrixCopy, col)
+        matrixCopy = simulateDrop(matrixCopy, col, mark=parent.player.playerNum+1)
 
         # Here, I can change which heuristic function I get to use
-        score = oneStepGetScoreV2(matrixCopy)                                       # CHANGE FOR A DIFFERENT HEURISTIC FUNCTION
+        score = oneStepGetScoreV2(matrixCopy, mark)                                       # CHANGE FOR A DIFFERENT HEURISTIC FUNCTION
         results.append(score)
 
     results = np.array(results)
@@ -49,46 +49,20 @@ def oneStepAgent(event, parent):
     # Finally, places the chip in a chosen spot!
     parent.matrix[0][valid_moves[final_choice[0]]].on_mouse_down(event)
 
-###
-# Even better - looks N steps ahead into a future!
-# I will use a minimax algorithm to help the agent look farther into the future and make better-informed decisions.
-#
-#
-###
-def nStepAgent(event, self):
-    print("nstep")
-    
 # Drops a chip into a copied matrix
-def simulateDrop(matrixCopy, colChoice):
+def simulateDrop(matrixCopy, colChoice, mark):
     # Finds the valid row 
     for row in range(6-1, -1, -1):
         if matrixCopy[row][colChoice] == 0:
             break
 
-    matrixCopy[row][colChoice] = 2
+    matrixCopy[row][colChoice] = mark
     return matrixCopy
 
-# Calculates the score of a particular matrix from a perspective of a computer
-# Only looks at number of threes and fours on a board. Works, but can be better
-def oneStepGetScore(matrixCopy):
-    # This are the values for our heuristics
-    A = 1e2
-    B = 1e6
-
-    num_threes = count_windows(matrixCopy, num_discs=3, mark=2, rows=6, columns=7)
-    num_fours = count_windows(matrixCopy, num_discs=4, mark=2, rows=6, columns=7)
-    # Number of thees for an opposing player
-    num_threes_opp = count_windows(matrixCopy, num_discs=3, mark=1, rows=6, columns=7)
-
-    # A formula, that calculates the total score for the particular play
-    # If the drop results in a win, score will be super hight. 
-    # If the drop results in a loss, score will be super low
-    score = num_threes - A*num_threes_opp + B*num_fours
-    return score
 
 # Uses a better heuristics function, accounting for how many twos there are 
 # for each player
-def oneStepGetScoreV2(matrixCopy):
+def oneStepGetScoreV2(matrixCopy, mark):
     # This are the values for our heuristiscs
     A = 1000000
     B = 5
@@ -96,11 +70,11 @@ def oneStepGetScoreV2(matrixCopy):
     D = -2
     E = -30
     
-    num_twos = count_windows(matrixCopy, num_discs=2, mark=2, rows=6, columns=7)
-    num_threes = count_windows(matrixCopy, num_discs=3, mark=2, rows=6, columns=7)
-    num_fours = count_windows(matrixCopy, num_discs=4, mark=2, rows=6, columns=7)
-    num_twos_opp = count_windows(matrixCopy, num_discs=2, mark=1, rows=6, columns=7)
-    num_threes_opp = count_windows(matrixCopy, num_discs=3, mark=1, rows=6, columns=7)
+    num_twos = count_windows(matrixCopy, num_discs=2, mark=mark+1, rows=6, columns=7)
+    num_threes = count_windows(matrixCopy, num_discs=3, mark=mark+1, rows=6, columns=7)
+    num_fours = count_windows(matrixCopy, num_discs=4, mark=mark+1, rows=6, columns=7)
+    num_twos_opp = count_windows(matrixCopy, num_discs=2, mark=(1-mark)+1, rows=6, columns=7)
+    num_threes_opp = count_windows(matrixCopy, num_discs=3, mark=(1-mark)+1, rows=6, columns=7)
 
     score = A*num_fours + B*num_threes + C*num_twos + D*num_twos_opp + E*num_threes_opp
     return score
